@@ -1,0 +1,59 @@
+/* LazyPassword 커스텀 스타일 (Pico.css 보완) */
+
+/* 인증 화면(로그인/회원가입)을 좁고 가운데로 */
+.auth-narrow {
+  max-width: 24rem;
+  margin: 4rem auto;
+}
+
+/* 볼트 상단 바 */
+.vault-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* 카드 그리드 */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  list-style: none;
+  padding: 0;
+}
+
+.cards article {
+  margin: 0;
+}
+
+.card-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.25rem 0;
+}
+
+.card-field .label {
+  min-width: 4rem;
+  color: var(--pico-muted-color);
+  font-size: 0.85rem;
+}
+
+.card-field .value {
+  flex: 1;
+  word-break: break-all;
+}
+
+/* 카드 안의 작은 아이콘 버튼 */
+.icon-btn {
+  width: auto;
+  padding: 0.2rem 0.5rem;
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.card-category {
+  font-size: 0.8rem;
+  color: var(--pico-muted-color);
+}
