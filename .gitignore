@@ -8,6 +8,7 @@
 
 # Local-only docs (개인 배포 가이드 등)
 DEPLOY.md
+TODO.md
 
 # Python
 __pycache__/
