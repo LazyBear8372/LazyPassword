@@ -12,5 +12,8 @@ class Settings(BaseSettings):
     # 세션/토큰 서명 등에 쓰는 서버 시크릿 키
     secret_key: str = "change-me-in-env"
 
+    # 운영(HTTPS) 환경에서 세션 쿠키를 secure로 발급할지 여부 (HTTPS 적용 후 true)
+    session_https_only: bool = False
+
 
 settings = Settings()

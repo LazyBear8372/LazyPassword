@@ -9,7 +9,12 @@ from app.core.config import settings
 from app.routers import auth, vault
 
 app = FastAPI(title="LazyPassword", description="웹 비밀번호 저장소")
-app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=settings.secret_key,
+    https_only=settings.session_https_only,
+    same_site="lax",
+)
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 app.include_router(auth.router)
