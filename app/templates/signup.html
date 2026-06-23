@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}회원가입 - LazyPassword{% endblock %}
+{% block content %}
+<h1>회원가입</h1>
+<form id="auth-form">
+  <input type="email" id="email" placeholder="이메일" required>
+  <input type="password" id="password" placeholder="마스터 비밀번호" required>
+  <button type="submit">가입</button>
+</form>
+<p id="error" style="color:red"></p>
+<p><a href="/login">이미 계정이 있으신가요? 로그인</a></p>
+<script>
+document.getElementById("auth-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const errorEl = document.getElementById("error");
+  errorEl.textContent = "";
+  try {
+    const authValue = await deriveAuthValue(password, email);
+    const res = await fetch("/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, auth_value: authValue }),
+    });
+    if (res.ok) {
+      window.location.href = "/";
+    } else {
+      const data = await res.json().catch(() => ({}));
+      errorEl.textContent = data.detail || "회원가입에 실패했습니다.";
+    }
+  } catch (err) {
+    errorEl.textContent = "오류: " + err.message;
+  }
+});
+</script>
+{% endblock %}
