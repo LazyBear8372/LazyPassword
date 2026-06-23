@@ -6,6 +6,9 @@
 # Local Claude Code settings
 .claude/
 
+# Local-only docs (개인 배포 가이드 등)
+DEPLOY.md
+
 # Python
 __pycache__/
 *.py[cod]
