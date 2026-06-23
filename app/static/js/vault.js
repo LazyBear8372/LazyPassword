@@ -51,10 +51,10 @@ function fieldRow(label, valueEl, ...buttons) {
   return row;
 }
 
-function iconButton(text, onClick) {
+function iconButton(text, onClick, variant = "secondary") {
   const b = document.createElement("button");
   b.type = "button";
-  b.className = "icon-btn secondary";
+  b.className = "icon-btn " + variant;
   b.textContent = text;
   b.addEventListener("click", onClick);
   return b;
@@ -71,7 +71,7 @@ function buildCard(id, data) {
   if (data.category) {
     const cat = document.createElement("span");
     cat.className = "card-category";
-    cat.textContent = "  " + data.category;
+    cat.textContent = data.category;
     header.appendChild(cat);
   }
   article.appendChild(header);
@@ -111,7 +111,7 @@ function buildCard(id, data) {
   const footer = document.createElement("footer");
   footer.append(
     iconButton("수정", () => startEdit(id, data)),
-    iconButton("삭제", () => removeItem(id))
+    iconButton("삭제", () => removeItem(id), "danger")
   );
   article.appendChild(footer);
 
