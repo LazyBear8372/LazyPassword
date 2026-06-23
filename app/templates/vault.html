@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}볼트 - LazyPassword{% endblock %}
+{% block content %}
+<h1>내 비밀번호 볼트</h1>
+<button id="logout-btn">로그아웃</button>
+
+<h2 id="form-title">새 항목 추가</h2>
+<form id="item-form">
+  <input type="hidden" id="item-id">
+  <input id="title" placeholder="제목" required>
+  <input id="username" placeholder="아이디">
+  <input id="password" placeholder="비밀번호">
+  <input id="url" placeholder="URL">
+  <input id="category" placeholder="카테고리">
+  <button type="submit" id="submit-btn">추가</button>
+  <button type="button" id="cancel-edit" style="display:none">취소</button>
+</form>
+<p id="error" style="color:red"></p>
+
+<h2>목록</h2>
+<ul id="item-list"></ul>
+
+<script src="/static/js/vault.js"></script>
+{% endblock %}

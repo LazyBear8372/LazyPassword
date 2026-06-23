@@ -24,6 +24,8 @@ document.getElementById("auth-form").addEventListener("submit", async (e) => {
       body: JSON.stringify({ email, auth_value: authValue }),
     });
     if (res.ok) {
+      const encKey = await deriveEncKey(password, email);
+      saveEncKey(encKey);
       window.location.href = "/";
     } else {
       const data = await res.json().catch(() => ({}));

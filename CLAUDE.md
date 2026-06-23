@@ -20,7 +20,7 @@ DB				PostgreSQL (Docker로 실행)
 - 영지식(zero-knowledge) 방식: 서버는 사용자 계정 정보의 평문을 절대 보지 못하며, 암호문만 저장한다.
 - 마스터 비밀번호 단일 인증 (OAuth 미사용).
 - 클라이언트 키 유도: masterKey = PBKDF2(마스터비번, salt = 'lazypassword:' + email, 반복 많이) (브라우저 Web Crypto 내장). salt를 서버에 따로 저장하지 않고 email을 salt로 사용한다(email-as-salt). 비밀번호를 직접 키로 쓰지 않는다.
-- 인증/암호화 키 분리: masterKey에서 HKDF로 컨텍스트를 달리해 인증값(authValue)과 암호화 키(encKey)를 유도한다. authValue만 서버로 전송하고 encKey는 브라우저 메모리에만 둔다.
+- 인증/암호화 키 분리: masterKey에서 HKDF로 컨텍스트를 달리해 인증값(authValue)과 암호화 키(encKey)를 유도한다. authValue만 서버로 전송하고 encKey는 탭 세션 동안 브라우저 sessionStorage에 보관한다(서버로 전송하지 않음).
 - 서버 저장: 받은 authValue를 Argon2로 한 번 더 해시해 auth_hash로 저장·검증한다. 서버에는 auth_hash와 암호문만 존재한다.
 - 암호화/복호화: 계정 정보는 클라이언트에서 AES-GCM으로 암호화/복호화하며, 복호화는 오직 브라우저에서만 수행한다.
 
@@ -56,7 +56,7 @@ tests/                 # pytest
 ### 로그인
 1. 클라이언트가 email을 salt로 masterKey 즉시 계산 → authValue 유도 → email, authValue를 한 번에 전송
 2. 서버 Argon2.verify(auth_hash, authValue) 성공 시 세션 발급
-3. 클라이언트는 encKey = HKDF(masterKey, 'enc')를 브라우저 메모리에만 보관
+3. 클라이언트는 encKey = HKDF(masterKey, 'enc')를 sessionStorage에 보관 (탭 닫으면 삭제)
 
 ### 볼트 조회·저장
 - 조회: 서버는 ciphertext+nonce만 내려주고, 클라이언트가 AES-GCM으로 복호화해 표시
