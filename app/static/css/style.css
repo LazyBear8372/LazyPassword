@@ -1,9 +1,29 @@
 /* LazyPassword 커스텀 스타일 (Pico.css 보완) */
 
-/* 인증 화면(로그인/회원가입)을 좁고 가운데로 */
+:root {
+  /* 강조색을 파랑 대신 인디고 계열로 */
+  --pico-primary-background: #4f46e5;
+  --pico-primary-border: #4f46e5;
+  --pico-primary-hover-background: #4338ca;
+  --pico-primary-hover-border: #4338ca;
+
+  --lp-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.08);
+  --lp-shadow-hover: 0 6px 12px rgba(0, 0, 0, 0.10), 0 16px 32px rgba(0, 0, 0, 0.14);
+  --lp-danger: #dc2626;
+  --lp-badge-bg: #ede9fe;
+  --lp-badge-fg: #6d28d9;
+}
+
+body {
+  background: #ffffff;
+}
+
+/* 인증 화면(로그인/회원가입) */
 .auth-narrow {
   max-width: 24rem;
   margin: 4rem auto;
+  box-shadow: var(--lp-shadow);
+  border-radius: 12px;
 }
 
 /* 볼트 상단 바 */
@@ -14,10 +34,10 @@
   gap: 1rem;
 }
 
-/* 카드 그리드 */
+/* 카드: 한 줄에 하나, 가로 전체 폭 */
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: 1fr;
   gap: 1rem;
   list-style: none;
   padding: 0;
@@ -25,17 +45,25 @@
 
 .cards article {
   margin: 0;
+  border-radius: 12px;
+  box-shadow: var(--lp-shadow);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cards article:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--lp-shadow-hover);
 }
 
 .card-field {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin: 0.25rem 0;
+  margin: 0.3rem 0;
 }
 
 .card-field .label {
-  min-width: 4rem;
+  min-width: 4.5rem;
   color: var(--pico-muted-color);
   font-size: 0.85rem;
 }
@@ -45,15 +73,28 @@
   word-break: break-all;
 }
 
-/* 카드 안의 작은 아이콘 버튼 */
+/* 카드 안의 작은 버튼 */
 .icon-btn {
   width: auto;
-  padding: 0.2rem 0.5rem;
+  padding: 0.2rem 0.6rem;
   margin: 0;
   font-size: 0.8rem;
 }
 
+.icon-btn.danger {
+  background: var(--lp-danger);
+  border-color: var(--lp-danger);
+  color: #fff;
+}
+
+/* 카테고리 배지(컬러 pill) */
 .card-category {
-  font-size: 0.8rem;
-  color: var(--pico-muted-color);
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.12rem 0.6rem;
+  border-radius: 999px;
+  background: var(--lp-badge-bg);
+  color: var(--lp-badge-fg);
+  font-size: 0.75rem;
+  font-weight: 600;
 }
