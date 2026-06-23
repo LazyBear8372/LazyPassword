@@ -15,6 +15,13 @@ function _bufToBase64(buf) {
   return btoa(bin);
 }
 
+function _base64ToBytes(b64) {
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+
 // 마스터 키: PBKDF2(비번, "lazypassword:"+email) -> 32바이트
 async function deriveMasterKey(password, email) {
   const baseKey = await crypto.subtle.importKey(
@@ -51,8 +58,49 @@ async function deriveAuthValue(password, email) {
   return _bufToBase64(auth);
 }
 
-// 볼트 암호화 키 (브라우저 메모리 전용, 볼트 기능에서 사용 예정)
+// 볼트 암호화 키 (sessionStorage에 보관해 탭 세션 동안 사용)
 async function deriveEncKey(password, email) {
   const masterKey = await deriveMasterKey(password, email);
   return await _hkdf(masterKey, "enc");
+}
+
+// --- encKey sessionStorage 보관 ---
+const ENC_KEY_NAME = "lazypassword_enc_key";
+
+function saveEncKey(encKeyBytes) {
+  sessionStorage.setItem(ENC_KEY_NAME, _bufToBase64(encKeyBytes));
+}
+
+function loadEncKey() {
+  const b64 = sessionStorage.getItem(ENC_KEY_NAME);
+  return b64 ? _base64ToBytes(b64) : null;
+}
+
+function clearEncKey() {
+  sessionStorage.removeItem(ENC_KEY_NAME);
+}
+
+// --- AES-GCM 항목 암복호화 ---
+async function _importAesKey(encKeyBytes) {
+  return crypto.subtle.importKey("raw", encKeyBytes, "AES-GCM", false, ["encrypt", "decrypt"]);
+}
+
+// 평문 객체 -> { ciphertext, nonce } (둘 다 base64)
+async function encryptItem(encKeyBytes, obj) {
+  const key = await _importAesKey(encKeyBytes);
+  const nonce = crypto.getRandomValues(new Uint8Array(12));
+  const data = _enc.encode(JSON.stringify(obj));
+  const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv: nonce }, key, data);
+  return { ciphertext: _bufToBase64(ct), nonce: _bufToBase64(nonce) };
+}
+
+// { ciphertext, nonce } (base64) -> 평문 객체
+async function decryptItem(encKeyBytes, ciphertext, nonce) {
+  const key = await _importAesKey(encKeyBytes);
+  const pt = await crypto.subtle.decrypt(
+    { name: "AES-GCM", iv: _base64ToBytes(nonce) },
+    key,
+    _base64ToBytes(ciphertext)
+  );
+  return JSON.parse(new TextDecoder().decode(pt));
 }
