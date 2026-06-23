@@ -14,9 +14,8 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
 
-    # 클라이언트가 마스터 키를 유도할 때 쓰는 salt (로그인 시 클라이언트에 전달)
-    kdf_salt: Mapped[str] = mapped_column(String, nullable=False)
     # 서버측 로그인 검증값: 클라이언트가 보낸 인증값을 Argon2로 다시 해시한 값
+    # (KDF salt는 별도 저장하지 않고 email을 salt로 사용한다 — email-as-salt)
     auth_hash: Mapped[str] = mapped_column(String, nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
