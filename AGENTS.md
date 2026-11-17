@@ -1,6 +1,7 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+이 파일은 Codex가 이 저장소에서 작업할 때 따르는 프로젝트 지침이다.
+가능한 한 최대한 간결하게 답변할 것.
 
 ## Project Overview
 
@@ -14,7 +15,7 @@ WAS 			Gunicorn + Uvicorn (ASGI worker)
 프레임워크		FastAPI
 ORM				SQLAlchemy (2.0 스타일)
 DB				PostgreSQL (Docker로 실행)
-프론트엔드		Jinja2 + HTMX
+프론트엔드		Jinja2 + JavaScript (fetch / Web Crypto API) + Pico.css
 
 ## Security Design
 - 영지식(zero-knowledge) 방식: 서버는 사용자 계정 정보의 평문을 절대 보지 못하며, 암호문만 저장한다.
@@ -31,13 +32,13 @@ DB				PostgreSQL (Docker로 실행)
 app/
 ├── main.py            # FastAPI 앱 진입점, 라우터·템플릿 등록
 ├── core/
-│   ├── config.py      # pydantic-settings 기반 .env 로딩 (Settings)
+│   ├── config.py      # pydantic-settings 기반 환경변수·.env 로딩 (Settings)
 │   └── database.py    # SQLAlchemy 엔진/세션/Base, get_db 의존성
 ├── models/            # SQLAlchemy ORM 모델 (User, VaultItem)
 ├── schemas/           # Pydantic 입출력 스키마
 ├── routers/           # 라우트 (auth, vault 등)
 ├── templates/         # Jinja2 HTML
-└── static/            # CSS/JS (HTMX)
+└── static/            # CSS/JavaScript (fetch / Web Crypto API)
 alembic/               # DB 마이그레이션 (env.py가 .env 기반 settings 사용)
 tests/                 # pytest
 ```
@@ -89,14 +90,37 @@ uv add <패키지>                        # 의존성 추가
 
 ## Git Convention
 
-GitHub Flow: Issue 생성 → 브랜치 분리 → 작업/커밋 → PR로 main 병합. PR 본문에 'Closes #이슈번호'를 적어 병합 시 이슈를 자동으로 닫는다.
+### 작업 흐름
 
-Branch Naming: <타입>/<이슈번호>-<짧은-설명>
-- 예: feat/12-master-login, fix/15-decrypt-error
+GitHub Flow: 마일스톤 선정 → Issue 생성 → 브랜치 분리 → 작업/검증/커밋 → PR → 검토 후 main 병합.
 
-Commit Convention: <타입>: <설명>
+- 이슈 하나당 브랜치 하나와 PR 하나를 기본으로 한다.
+- PR 본문에 `Closes #이슈번호`를 적어 병합 시 관련 이슈를 자동으로 닫는다.
+- 관련 이슈와 PR은 같은 마일스톤에 배정한다.
+- 마일스톤은 포함된 작업이 모두 완료되고 관련 PR이 병합된 후 닫는다.
+
+### 이슈·PR 제목 및 커밋
+
+이슈 제목, PR 제목, 커밋 메시지는 `<타입>: <한국어 작업 내용>` 형식으로 작성한다.
+파일명이나 구현 기술만 적기보다 무엇을 추가하거나 변경하는지 구체적으로 적는다.
+
 - feat: 새 기능 추가
 - fix: 버그 수정
 - docs: 문서 변경
 - refactor: 기능 변화 없는 구조 개선
 - chore: 빌드·설정·패키지 등 잡무
+- test: 테스트 추가·수정
+
+예: `docs: AGENTS.md 전환 및 개발 규칙 정비`
+
+### 브랜치 이름
+
+`codex/<타입>/<이슈번호>-<짧은-영문-설명>` 형식을 사용한다.
+예: `codex/docs/23-agents-guide`, `codex/chore/24-server-readiness`
+
+### 마일스톤
+
+- 기능이나 개발 단계의 목표를 나타내는 한국어 이름을 사용한다.
+- 새 작업을 시작할 때 적절한 진행 중 마일스톤에 배정하고, 없으면 새로 만든다.
+- 이슈와 구현 PR을 함께 묶어 진행 상황과 완료 여부를 추적한다.
+- 목표와 포함 범위는 마일스톤 설명에 적고, 기한은 합의된 경우에만 설정한다.
