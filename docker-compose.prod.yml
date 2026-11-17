@@ -28,13 +28,28 @@ services:
       SESSION_HTTPS_ONLY: ${SESSION_HTTPS_ONLY:-false}
       # nginx 뒤에 있으므로 프록시 헤더(X-Forwarded-*)를 신뢰
       FORWARDED_ALLOW_IPS: "*"
+    # 마이그레이션 후 WAS가 로그인 페이지를 제공할 준비가 됐는지 확인한다.
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - |
+          import urllib.request
+          with urllib.request.urlopen("http://127.0.0.1:8000/login", timeout=2) as response:
+              raise SystemExit(response.status != 200)
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
     restart: unless-stopped
 
-  nginx:
+  server:
     image: nginx:1.27
-    container_name: lazypassword-nginx
+    container_name: lazypassword-server
     depends_on:
-      - app
+      app:
+        condition: service_healthy
     ports:
       - "80:80"
       - "443:443"
