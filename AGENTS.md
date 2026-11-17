@@ -115,8 +115,8 @@ GitHub Flow: 마일스톤 선정 → Issue 생성 → 브랜치 분리 → 작�
 
 ### 브랜치 이름
 
-`codex/<타입>/<이슈번호>-<짧은-영문-설명>` 형식을 사용한다.
-예: `codex/docs/23-agents-guide`, `codex/chore/24-server-readiness`
+`<타입>/<이슈번호>-<짧은-영문-설명>` 형식을 사용한다.
+예: `docs/23-agents-guide`, `chore/24-server-readiness`
 
 ### 마일스톤
 
