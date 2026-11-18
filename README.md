@@ -46,3 +46,25 @@ docker compose exec app uv run --no-sync alembic upgrade head
 - `docker compose down`은 데이터를 유지한다. `down -v`는 개발 DB와 가상환경 볼륨까지 삭제하므로 초기화할 때만 사용한다.
 - 운영 구성은 `docker compose -f docker-compose.prod.yml ...`로 별도 실행한다.
   개발 파일과 운영 파일을 `-f` 옵션으로 함께 병합하지 않는다.
+
+## 앱 이미지 게시
+
+`.github/workflows/publish-image.yml`은 PR에서 이미지를 빌드하고 임시 PostgreSQL로
+마이그레이션·로그인 페이지 응답을 검증한다. PR에서는 GHCR에 게시하지 않는다.
+main에 병합되면 동일한 검증 후 이미지를 GHCR에 게시한다.
+Actions의 `Run workflow`로 수동 실행할 수도 있으며, 게시는 main에서 실행할 때만 수행한다.
+
+이미지 주소는 `ghcr.io/lazybear8372/lazypassword:sha-<전체 커밋 SHA>`이다.
+게시 작업은 검증한 이미지를 전달받아 사용하며 다시 빌드하지 않는다.
+초기 빌드 대상은 GitHub 호스팅 러너의 `linux/amd64`이다.
+운영 서버에 적용하기 전에 서버 아키텍처와 일치하는지 확인한다.
+
+인증에는 GitHub가 제공하는 `GITHUB_TOKEN`을 사용하므로 별도 게시 토큰은 필요하지 않다.
+게시 작업에만 `packages: write`를 부여하며, 빌드 작업은 저장소 읽기 권한만 사용한다.
+첫 게시 후 GitHub 프로필의 Packages에서 `lazypassword`를 확인할 수 있다.
+이미지는 기본 Private이므로, 인증 없이 내려받으려면 Package settings에서 Public으로 변경한다.
+Private으로 유지하면 운영 서버에 별도 읽기 인증이 필요하다.
+
+이 워크플로는 이미지 빌드·기동 검증·게시를 담당한다.
+취약점 스캐너와 운영 서버 배포 자동화는 별도 단계에서 추가한다.
+운영 Compose의 이미지 참조 전환은 이슈 #30의 후속 단계에서 진행한다.
