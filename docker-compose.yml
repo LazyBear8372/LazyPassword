@@ -1,20 +1,59 @@
+name: lazypassword-dev
+
 services:
   db:
     image: postgres:16
-    container_name: lazypassword-db
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
       interval: 5s
       timeout: 3s
       retries: 5
 
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      SECRET_KEY: ${SECRET_KEY}
+      # 개발 서버는 로컬 HTTP로 접속한다.
+      SESSION_HTTPS_ONLY: "false"
+      # 소스 폴더에 컨테이너 소유의 Python 캐시를 만들지 않는다.
+      PYTHONDONTWRITEBYTECODE: "1"
+    command:
+      - sh
+      - -c
+      - |
+        uv sync --locked &&
+        uv run --no-sync alembic upgrade head &&
+        exec uv run --no-sync uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir app
+    ports:
+      - "127.0.0.1:${APP_PORT:-8000}:8000"
+    volumes:
+      - .:/app
+      # 호스트 .venv 대신 컨테이너 전용 가상환경을 사용한다.
+      - app_venv:/app/.venv
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - |
+          import urllib.request
+          with urllib.request.urlopen("http://127.0.0.1:8000/login", timeout=2) as response:
+              raise SystemExit(response.status != 200)
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+
 volumes:
   pgdata:
+  app_venv:
