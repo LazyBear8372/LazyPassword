@@ -12,7 +12,9 @@ RUN uv sync --frozen --no-install-project
 
 # 앱 코드
 COPY . .
-RUN uv sync --frozen && chmod +x docker-entrypoint.sh
+RUN uv sync --frozen
 
 EXPOSE 8000
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+
+# 마이그레이션 성공 후 WAS 실행. CMD는 개발 Compose에서 재정의할 수 있다.
+CMD ["sh", "-c", "uv run alembic upgrade head && exec uv run gunicorn app.main:app -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000 --workers \"${WEB_CONCURRENCY:-2}\""]
