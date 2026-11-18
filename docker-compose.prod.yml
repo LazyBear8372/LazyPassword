@@ -16,7 +16,7 @@ services:
     restart: unless-stopped
 
   app:
-    build: .
+    image: "${APP_IMAGE:?Set APP_IMAGE to a published LazyPassword image}"
     container_name: lazypassword-app
     depends_on:
       db:
@@ -50,6 +50,8 @@ services:
     depends_on:
       app:
         condition: service_healthy
+        # 앱 컨테이너 교체 후 Nginx가 새 주소를 다시 확인한다.
+        restart: true
     ports:
       - "80:80"
       - "443:443"
