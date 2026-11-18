@@ -67,4 +67,29 @@ Private으로 유지하면 운영 서버에 별도 읽기 인증이 필요하다
 
 이 워크플로는 이미지 빌드·기동 검증·게시를 담당한다.
 취약점 스캐너와 운영 서버 배포 자동화는 별도 단계에서 추가한다.
-운영 Compose의 이미지 참조 전환은 이슈 #30의 후속 단계에서 진행한다.
+
+## 운영 실행
+
+운영 서버에는 `docker-compose.prod.yml`, `nginx/default.conf`, 운영용 `.env`와
+Nginx 설정이 참조하는 TLS 인증서를 준비한다. 기존 설치를 업데이트할 때는 같은 Compose
+프로젝트에서 실행해 PostgreSQL 볼륨을 계속 사용한다.
+
+1. Actions의 게시 결과에서 이미지 주소를 확인하고 운영 `.env`의 `APP_IMAGE`에 지정한다.
+   커밋 SHA 태그나 digest 참조를 사용할 수 있다. 기존 값은 롤백을 위해 기록해 둔다.
+2. GHCR 패키지가 Private이면 패키지 읽기 권한과 `read:packages` 범위가 있는 GitHub
+   classic PAT를 준비한다. 운영 서버에서 Compose를 실행하는 사용자로 `docker login ghcr.io -u <GitHub 사용자명>`을
+   실행하고 비밀번호 입력란에 토큰을 넣는다.
+3. 아래 명령으로 이미지를 받은 뒤 컨테이너를 실행하고 HTTPS 응답을 확인한다.
+
+```bash
+docker compose -f docker-compose.prod.yml pull app &&
+  docker compose -f docker-compose.prod.yml up -d --no-build --wait
+curl --fail --silent --show-error https://lazypassword.kr/login --output /dev/null
+```
+
+앱 컨테이너가 교체되면 Compose가 Nginx를 재시작해 새 앱 컨테이너 주소를 사용한다.
+교체 중에는 잠시 요청 처리가 중단될 수 있다.
+
+롤백하려면 현재 DB 스키마를 이전 앱과 함께 쓸 수 있는지 확인하고, `.env`의
+`APP_IMAGE`를 이전 버전으로 바꾼 뒤 같은 명령을 실행한다. 앱 이미지를 되돌려도
+이미 적용한 DB 마이그레이션은 자동으로 되돌아가지 않는다.
