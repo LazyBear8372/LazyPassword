@@ -69,20 +69,21 @@ tests/                 # pytest
 
 ## Commands
 ```bash
-# DB 기동 (Docker PostgreSQL)
-docker compose up -d                  # 권한 이슈 시: sg docker -c "docker compose up -d"
+# 개발 앱·DB 실행 (Python 3.12, 초기 실행 전 .env 설정)
+docker compose up --build             # 권한 이슈 시: sg docker -c "docker compose up --build"
+docker compose logs -f app
+docker compose down                  # DB 데이터 유지
 
 # 마이그레이션
-uv run alembic revision --autogenerate -m "<설명>"
-uv run alembic upgrade head
+docker compose exec --user "$(id -u):$(id -g)" app .venv/bin/alembic revision --autogenerate -m "<설명>"
+docker compose exec app uv run --no-sync alembic upgrade head
 
-# 개발 서버 실행
-uv run uvicorn app.main:app --reload
-
-# 의존성
-uv sync                               # 잠금 파일대로 설치
-uv add <패키지>                        # 의존성 추가
+# 의존성 추가 (pyproject.toml·uv.lock에 반영)
+docker compose run --rm --no-deps app uv add <패키지>
+docker compose restart app
 ```
+
+개발 실행·볼륨 분리·기존 데이터 관련 주의사항은 README.md를 참고한다.
 
 ## Open Source Policy
 서비스에 대한 신뢰를 위해 모든 코드를 github에 공개할 것이다.
