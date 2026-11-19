@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+LightsailDefaultKey-*.pem
 
 # Local Claude Code settings
 .claude/
