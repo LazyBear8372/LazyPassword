@@ -72,6 +72,19 @@ jobs:
           done
           exit 1
 
+      - name: Scan image for vulnerabilities
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        env:
+          TRIVY_IMAGE_SRC: docker
+        with:
+          version: 'v0.76.2'
+          scan-type: image
+          image-ref: ${{ env.LOCAL_IMAGE }}
+          scanners: vuln
+          format: table
+          # 첫 검사 결과를 검토한 뒤 취약점으로 게시를 차단할 기준을 정한다.
+          exit-code: '0'
+
       # 검증한 이미지를 그대로 전달해 게시 단계에서 다시 빌드하지 않는다.
       - name: Save verified image
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
