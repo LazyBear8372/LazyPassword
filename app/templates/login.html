@@ -5,3 +5,48 @@
 {% set submit_label = "로그인" %}
 {% set alternate_url = "/signup" %}
 {% set alternate_label = "회원가입" %}
+
+{% block header %}
+<header class="site-header intro-header">
+  {% include "brand.html" %}
+  {% include "theme-toggle.html" %}
+</header>
+{% endblock %}
+
+{% block auth_main %}
+<main class="intro-shell">
+  <section class="intro-hero" aria-labelledby="intro-title">
+    <h1 id="intro-title">
+      웹 비밀번호<br>
+      저장소
+    </h1>
+    <div class="intro-lock" aria-hidden="true"></div>
+    <p class="intro-tagline">사이트마다 다른 비밀번호를 쓰고, 강한 마스터 비밀번호 하나만 기억하세요.</p>
+  </section>
+
+  <section class="login-panel" aria-labelledby="login-title">
+    <h2 id="login-title">{{ heading }}</h2>
+    {% include "auth-form.html" %}
+  </section>
+
+  <div class="intro-details">
+    <section class="intro-detail">
+      <h2>비밀번호를 돌려쓰면 한 번의 유출이 여러 계정으로 번질 수 있습니다.</h2>
+      <p>한 사이트에서 유출된 아이디와 비밀번호로 다른 사이트에 로그인을 시도하는 공격을 <span class="intro-term">Credential Stuffing</span>이라고 합니다. 사이트마다 다른 비밀번호를 쓰면 이런 위험을 줄일 수 있습니다.</p>
+    </section>
+    <section class="intro-detail">
+      <h2>모든 비밀번호를 외우기는 어렵습니다.</h2>
+      <p>LazyPassword의 비밀번호 생성기로 사이트마다 길고 무작위인 비밀번호를 만들어 한곳에 저장하세요. 휴대폰이든 컴퓨터든, 브라우저에서 로그인하면 필요할 때 꺼내 쓸 수 있습니다.</p>
+    </section>
+    <section class="intro-detail">
+      <h2><span class="intro-term">Zero-knowledge</span> 방식으로 보관합니다.</h2>
+      <p>계정 정보는 브라우저에서 암호화하며, 복호화 키도 브라우저에서만 사용합니다. 서버 관리자도 DB에 저장된 암호문만으로는 비밀번호를 읽을 수 없습니다.</p>
+    </section>
+    <section class="intro-detail">
+      <h2>소스 코드로 확인할 수 있습니다</h2>
+      <p>LazyPassword는 소스 코드를 GitHub에 공개합니다. 계정 정보가 브라우저에서 어떻게 암호화되고 서버에 어떤 데이터가 전달되는지, 누구나 코드를 읽고 <span class="intro-term">Zero-knowledge</span> 설계를 직접 확인할 수 있습니다.</p>
+      <a class="intro-source" href="https://github.com/LazyBear8372/LazyPassword">GitHub에서 소스 코드 보기</a>
+    </section>
+  </div>
+</main>
+{% endblock %}

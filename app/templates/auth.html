@@ -6,18 +6,12 @@
 </header>
 {% endblock %}
 {% block content %}
+{% block auth_main %}
 <main class="auth-shell">
   {% include "brand.html" %}
   <h1>{{ heading }}</h1>
-  <form id="auth-form" data-endpoint="{{ endpoint }}">
-    <label for="email">이메일</label>
-    <input id="email" type="email" placeholder="name@example.com" autocomplete="username" required>
-    <label for="password">마스터 비밀번호</label>
-    <input id="password" type="password" autocomplete="{{ password_autocomplete }}" required>
-    <p id="error" class="form-error" role="alert"></p>
-    <button type="submit" class="button primary auth-submit">{{ submit_label }}</button>
-  </form>
-  <a class="auth-link" href="{{ alternate_url }}">{{ alternate_label }}</a>
+  {% include "auth-form.html" %}
 </main>
+{% endblock %}
 <script src="/static/js/auth.js"></script>
 {% endblock %}
