@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}LazyPassword{% endblock %}</title>
+  <link rel="icon" href="/static/lock.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
   <link rel="stylesheet" href="/static/css/style.css">
   <script src="/static/js/crypto.js"></script>
 </head>
 <body>
-  <main class="container">
-    {% block content %}{% endblock %}
-  </main>
+  {% block header %}{% endblock %}
+  {% block content %}{% endblock %}
 </body>
 </html>

@@ -1,41 +1,7 @@
-{% extends "base.html" %}
-{% block title %}로그인 - LazyPassword{% endblock %}
-{% block content %}
-<article class="auth-narrow">
-<h1>로그인</h1>
-<form id="auth-form">
-  <input type="email" id="email" placeholder="이메일" required>
-  <input type="password" id="password" placeholder="마스터 비밀번호" required>
-  <button type="submit">로그인</button>
-</form>
-<p id="error" style="color:red"></p>
-<p><a href="/signup">계정이 없으신가요? 회원가입</a></p>
-</article>
-<script>
-document.getElementById("auth-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  const errorEl = document.getElementById("error");
-  errorEl.textContent = "";
-  try {
-    const authValue = await deriveAuthValue(password, email);
-    const res = await fetch("/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, auth_value: authValue }),
-    });
-    if (res.ok) {
-      const encKey = await deriveEncKey(password, email);
-      saveEncKey(encKey);
-      window.location.href = "/";
-    } else {
-      const data = await res.json().catch(() => ({}));
-      errorEl.textContent = data.detail || "로그인에 실패했습니다.";
-    }
-  } catch (err) {
-    errorEl.textContent = "오류: " + err.message;
-  }
-});
-</script>
-{% endblock %}
+{% extends "auth.html" %}
+{% set heading = "로그인" %}
+{% set endpoint = "/login" %}
+{% set password_autocomplete = "current-password" %}
+{% set submit_label = "로그인" %}
+{% set alternate_url = "/signup" %}
+{% set alternate_label = "회원가입" %}
