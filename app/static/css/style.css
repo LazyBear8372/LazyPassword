@@ -214,7 +214,7 @@ a:hover {
   z-index: 2;
   top: calc(100% + 8px);
   right: 0;
-  width: min(352px, 100vw - 36px);
+  width: min(544px, 100vw - 36px);
   padding: 18px;
   border: 1px solid var(--lp-line);
   border-radius: 14px;
@@ -238,7 +238,7 @@ a:hover {
   color: var(--lp-ink);
   box-shadow: none;
   font: 16px/1.4 ui-monospace, monospace;
-  overflow-wrap: anywhere;
+  line-break: anywhere;
   resize: none;
   field-sizing: content;
 }
