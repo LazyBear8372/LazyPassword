@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% block title %}{{ heading }} - LazyPassword{% endblock %}
 {% block header %}
-<header class="auth-tools">
+<header class="header-actions auth-tools">
   {% include "theme-toggle.html" %}
+  {% include "password-generator.html" %}
 </header>
 {% endblock %}
 {% block content %}

@@ -9,7 +9,10 @@
 {% block header %}
 <header class="site-header intro-header">
   {% include "brand.html" %}
-  {% include "theme-toggle.html" %}
+  <div class="header-actions">
+    {% include "theme-toggle.html" %}
+    {% include "password-generator.html" %}
+  </div>
 </header>
 {% endblock %}
 
