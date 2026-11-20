@@ -1,12 +1,18 @@
 {% extends "base.html" %}
 {% block title %}볼트 - LazyPassword{% endblock %}
 {% block header %}
-<header class="site-header">
+<header class="site-header vault-header">
   {% include "brand.html" %}
   <div class="header-actions">
     {% include "password-generator.html" %}
     {% include "theme-toggle.html" %}
-    <button type="button" id="logout-btn" class="button logout">로그아웃</button>
+    <button type="button" id="logout-btn" class="button header-button" aria-label="로그아웃" title="로그아웃">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M17 16l4-4-4-4m4 4H9"/>
+      </svg>
+      <span>로그아웃</span>
+    </button>
   </div>
 </header>
 {% endblock %}

@@ -184,7 +184,7 @@ a:hover {
   background: var(--lp-danger-hover);
 }
 
-:is(.theme-toggle, .password-generator-toggle) {
+.header-button {
   gap: 7px;
   min-height: 40px;
   padding-inline: 11px;
@@ -193,8 +193,8 @@ a:hover {
   font-weight: 550;
 }
 
-.theme-toggle:hover,
-.password-generator-toggle:is(:hover, [aria-expanded="true"]) {
+.header-button:hover:not(:disabled),
+.password-generator-toggle[aria-expanded="true"] {
   background: var(--lp-hover);
 }
 
@@ -442,7 +442,7 @@ a:hover {
   font-size: 30px;
 }
 
-.intro-header :is(.theme-toggle, .password-generator-toggle) {
+.intro-header .header-button {
   padding: 8px 17px;
   border-color: currentColor;
   border-radius: 999px;
@@ -582,17 +582,6 @@ a:hover {
   display: flex;
   align-items: center;
   gap: 10px;
-}
-
-.logout {
-  padding-inline: 0;
-  font-size: 20px;
-  font-weight: 550;
-}
-
-.logout:hover:not(:disabled) {
-  color: var(--lp-green);
-  text-decoration: underline;
 }
 
 .vault-shell {
@@ -880,8 +869,7 @@ a:hover {
     right: 16px;
   }
 
-  :is(.theme-toggle, .password-generator-toggle) {
-    min-height: 40px;
+  .header-button {
     font-size: 13px;
   }
 
@@ -893,11 +881,6 @@ a:hover {
   .brand-icon {
     width: 22px;
     height: 24px;
-  }
-
-  .logout {
-    min-height: 44px;
-    font-size: 15px;
   }
 
   .vault-shell {
@@ -1031,15 +1014,24 @@ a:hover {
   }
 }
 
+@media (max-width: 720px) {
+  .vault-header .header-button {
+    width: 40px;
+    padding-inline: 0;
+  }
+
+  .vault-header .header-button > span {
+    display: none;
+  }
+}
+
 @media (max-width: 520px) {
-  .site-header .theme-toggle,
-  .site-header:not(.intro-header) .password-generator-toggle {
+  .intro-header .theme-toggle {
     min-width: 40px;
     padding-inline: 0;
   }
 
-  .site-header .theme-label,
-  .site-header:not(.intro-header) .password-generator-toggle span {
+  .intro-header .theme-label {
     display: none;
   }
 }
@@ -1077,7 +1069,7 @@ a:hover {
     height: 26px;
   }
 
-  .intro-header :is(.theme-toggle, .password-generator-toggle) {
+  .intro-header .header-button {
     padding-inline: 10px;
     font-size: 13px;
   }
