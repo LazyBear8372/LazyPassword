@@ -14,11 +14,18 @@ const formTitle = document.getElementById("form-title");
 const itemError = document.getElementById("item-error");
 const submitButton = document.getElementById("submit-btn");
 const cancelButton = document.getElementById("cancel-edit");
+const deleteDialog = document.getElementById("delete-dialog");
+const deleteForm = document.getElementById("delete-form");
+const deleteAccount = document.getElementById("delete-account");
+const deleteError = document.getElementById("delete-error");
+const confirmDelete = document.getElementById("confirm-delete");
+const cancelDelete = document.getElementById("cancel-delete");
 const logoutButton = document.getElementById("logout-btn");
 const externalLinkIcon = document.getElementById("external-link-icon");
 
 let allItems = [];
 let editingId = null;
+let deletingId = null;
 let latestLoad = 0;
 
 function openEditor(id = null, data = {}) {
@@ -28,9 +35,16 @@ function openEditor(id = null, data = {}) {
     document.getElementById(field).value = data[field] || "";
   }
   itemError.textContent = "";
-  formTitle.textContent = id === null ? "새 항목 추가" : "항목 수정";
+  formTitle.textContent = id === null ? "새 계정 추가" : "항목 수정";
   submitButton.textContent = id === null ? "추가" : "수정 저장";
   dialog.showModal();
+}
+
+function openDeleteDialog(id, title) {
+  deletingId = id;
+  deleteAccount.textContent = title;
+  deleteError.textContent = "";
+  deleteDialog.showModal();
 }
 
 function readForm() {
@@ -133,7 +147,7 @@ function buildCard(id, data) {
   actions.className = "card-actions";
   actions.append(
     cardButton("수정", () => openEditor(id, data), "outline"),
-    cardButton("삭제", (event) => removeItem(id, event.currentTarget), "danger"),
+    cardButton("삭제", () => openDeleteDialog(id, title.textContent), "danger"),
   );
   article.append(heading);
   if (fields.childElementCount > 0) article.append(fields);
@@ -180,22 +194,39 @@ async function loadItems() {
     }
   } catch {
     if (load === latestLoad) errorEl.textContent = "목록을 불러오지 못했습니다.";
+    return false;
   }
+  return true;
 }
 
-async function removeItem(id, button) {
-  button.disabled = true;
-  errorEl.textContent = "";
+deleteForm.addEventListener("submit", async (event) => {
+  if (event.submitter !== confirmDelete) return;
+  event.preventDefault();
+  if (confirmDelete.disabled) return;
+  deleteError.textContent = "";
+  confirmDelete.disabled = true;
+  cancelDelete.disabled = true;
+
   try {
-    const response = await fetch(`/vault/items/${id}`, { method: "DELETE" });
+    const response = await fetch(`/vault/items/${deletingId}`, { method: "DELETE" });
     if (!response.ok) throw new Error();
-    await loadItems();
+    if (!(await loadItems())) {
+      allItems = allItems.filter(({ id }) => id !== deletingId);
+      renderCards();
+    }
+    deleteDialog.close();
+    searchEl.focus();
   } catch {
-    errorEl.textContent = "삭제에 실패했습니다.";
+    deleteError.textContent = "삭제에 실패했습니다.";
   } finally {
-    button.disabled = false;
+    confirmDelete.disabled = false;
+    cancelDelete.disabled = false;
   }
-}
+});
+
+deleteDialog.addEventListener("cancel", (event) => {
+  if (confirmDelete.disabled) event.preventDefault();
+});
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
